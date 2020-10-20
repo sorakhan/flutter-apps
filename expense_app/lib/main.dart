@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     // ),
   ];
 
+  // gets the most recent transactions - last 7 days
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((transaction) {
       return transaction.date.isAfter(
@@ -52,18 +53,20 @@ class _HomePageState extends State<HomePage> {
     }).toList();
   }
 
-  _addNewTransaction(String title, double amount) {
+  // adds new transaction and updates list of transactions
+  _addNewTransaction(String title, double amount, DateTime dateSelected) {
     final newTransaction = Transaction(
         id: DateTime.now().toString(),
         title: title,
         amount: amount,
-        date: DateTime.now());
+        date: dateSelected);
 
     setState(() {
       _userTransactions.add(newTransaction);
     });
   }
 
+  // shows the modal bottom sheet for user to input transaction data
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,

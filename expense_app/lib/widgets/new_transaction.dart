@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addHandler;
@@ -10,20 +11,42 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
-
-  final amountController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  DateTime _datePicked;
 
   void submitData() {
     // checking if inputs are in the form
-    final String titleInput = titleController.text;
-    final double amountInput = double.parse(amountController.text);
-    if (titleInput.isEmpty || amountInput <= 0) {
+    if (_amountController.text.isEmpty) { 
       return;
     }
 
-    widget.addHandler(titleInput, amountInput);
-    Navigator.of(context).pop();
+    final String titleInput = _titleController.text;
+    final double amountInput = double.parse(_amountController.text);
+    if (titleInput.isEmpty || amountInput <= 0 || _datePicked == null) {
+      return;
+    }
+
+    widget.addHandler(titleInput, amountInput, _datePicked);
+    Navigator.of(context).pop(); // removes modal box
+  }
+
+  void _displayDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    ).then((dateVal) {
+      if (dateVal == null) {
+        // user cancelled picking date
+        return;
+      }
+
+      setState(() {
+        _datePicked = dateVal;
+      });
+    });
   }
 
   @override
@@ -35,14 +58,28 @@ class _NewTransactionState extends State<NewTransaction> {
           children: [
             TextField(
               decoration: InputDecoration(labelText: 'Title'),
-              controller: titleController,
+              controller: _titleController,
               onSubmitted: (_) => submitData(),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Amount'),
-              controller: amountController,
+              controller: _amountController,
               onSubmitted: (_) => submitData(),
               keyboardType: TextInputType.number,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(_datePicked == null
+                      ? 'No date selected'
+                      : 'Date: ${DateFormat.yMMMMd().format(_datePicked)}'),
+                ),
+                FlatButton(
+                  onPressed: _displayDatePicker,
+                  child: Text('Pick a date', style: TextStyle(fontWeight: FontWeight.bold)),
+                  textColor: Theme.of(context).accentColor,
+                )
+              ],
             ),
             FlatButton(
               color: Theme.of(context).primaryColor,
