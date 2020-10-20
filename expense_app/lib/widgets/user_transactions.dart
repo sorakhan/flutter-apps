@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../models/transaction.dart';
 import './new_transaction.dart';
-import './transaction_list.dart';
+// import './transaction_list.dart';
+
+// NO LONGER USING THIS WIDGET BECAUSE EVERYTHING HERE IS IN MAIN
 
 class UserTransactions extends StatefulWidget {
   @override
@@ -43,7 +45,7 @@ class _UserTransactionsState extends State<UserTransactions> {
     return Column(
       children: [
         NewTransaction(_addNewTransaction), 
-        TransactionList(_userTransactions)
+        // TransactionList(_userTransactions)
         ],
     );
   }

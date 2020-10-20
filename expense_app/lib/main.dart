@@ -66,6 +66,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  _deleteTransaction(String id) {
+    print('will delete: ' + id);
+    setState(() {
+      _userTransactions.removeWhere((tx) => tx.id == id);
+    });
+  }
+
   // shows the modal bottom sheet for user to input transaction data
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
@@ -101,7 +108,7 @@ class _HomePageState extends State<HomePage> {
             ),
             // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
 
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions, _deleteTransaction),
           ],
         ),
       ),
