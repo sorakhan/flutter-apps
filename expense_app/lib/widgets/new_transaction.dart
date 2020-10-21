@@ -17,7 +17,7 @@ class _NewTransactionState extends State<NewTransaction> {
 
   void submitData() {
     // checking if inputs are in the form
-    if (_amountController.text.isEmpty) { 
+    if (_amountController.text.isEmpty) {
       return;
     }
 
@@ -51,47 +51,56 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Title'),
-              controller: _titleController,
-              onSubmitted: (_) => submitData(),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Amount'),
-              controller: _amountController,
-              onSubmitted: (_) => submitData(),
-              keyboardType: TextInputType.number,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(_datePicked == null
-                      ? 'No date selected'
-                      : 'Date: ${DateFormat.yMMMMd().format(_datePicked)}'),
-                ),
-                FlatButton(
-                  onPressed: _displayDatePicker,
-                  child: Text('Pick a date', style: TextStyle(fontWeight: FontWeight.bold)),
-                  textColor: Theme.of(context).accentColor,
-                )
-              ],
-            ),
-            FlatButton(
-              color: Theme.of(context).primaryColor,
-              onPressed: submitData,
-              child: Text(
-                'Add Transaction',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+    return SingleChildScrollView(
+          child: Card(
+        child: Container(
+          // padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.only(
+            top: 10,
+            left: 10,
+            right: 10,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+          ),
+          child: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: 'Title'),
+                controller: _titleController,
+                onSubmitted: (_) => submitData(),
               ),
-            )
-          ],
+              TextField(
+                decoration: InputDecoration(labelText: 'Amount'),
+                controller: _amountController,
+                onSubmitted: (_) => submitData(),
+                keyboardType: TextInputType.number,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(_datePicked == null
+                        ? 'No date selected'
+                        : 'Date: ${DateFormat.yMMMMd().format(_datePicked)}'),
+                  ),
+                  FlatButton(
+                    onPressed: _displayDatePicker,
+                    child: Text('Pick a date',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    textColor: Theme.of(context).accentColor,
+                  )
+                ],
+              ),
+              FlatButton(
+                color: Theme.of(context).primaryColor,
+                onPressed: submitData,
+                child: Text(
+                  'Add Transaction',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

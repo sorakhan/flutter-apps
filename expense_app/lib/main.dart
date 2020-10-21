@@ -1,11 +1,15 @@
 // 14 Oct 2020 - Sora Khan - Transaction app
 // import 'package:expense_app/widgets/user_transactions.dart';
-import 'package:expense_app/widgets/chart.dart';
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import './models/transaction.dart';
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
+import './widgets/chart.dart';
 
 void main() => runApp(MyApp());
 
@@ -89,80 +93,107 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final appBarWidget = AppBar(
-      title: Text('Transax'),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () => _startAddNewTransaction(context),
-        ),
-      ],
-    );
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final PreferredSizeWidget appBarWidget = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text('Transax'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  child: Icon(CupertinoIcons.add),
+                  onTap: () => _startAddNewTransaction(context),
+                )
+              ],
+            ),
+          )
+        : AppBar(
+            title: Text('Transax'),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () => _startAddNewTransaction(context),
+              ),
+            ],
+          );
     final txListWidget = Container(
-      height: (MediaQuery.of(context).size.height -
+      height: (mediaQuery.size.height -
               appBarWidget.preferredSize.height -
-              MediaQuery.of(context).padding.top) *
+              mediaQuery.padding.top) *
           0.8,
       child: TransactionList(_userTransactions, _deleteTransaction),
     );
-    return Scaffold(
-      appBar: appBarWidget,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          // children = SHOWS CHART AND LIST OF TRANSACTIONS
-          children: [
-            if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Show Chart'),
-                  Switch(
-                    value: _showChart,
-                    onChanged: (val) {
-                      setState(() {
-                        _showChart = val;
-                      });
-                    },
+
+    final appBody = SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        // children = SHOWS CHART AND LIST OF TRANSACTIONS
+        children: [
+          if (isLandscape)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Show Chart'),
+                Switch.adaptive(
+                  activeColor: Theme.of(context).primaryColor,
+                  value: _showChart,
+                  onChanged: (val) {
+                    setState(() {
+                      _showChart = val;
+                    });
+                  },
+                )
+              ],
+            ),
+          // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
+
+          // shows chart or list of transactions depending on toggle _showChart
+          if (isLandscape)
+            _showChart
+                ? Container(
+                    padding: EdgeInsets.all(10),
+                    height: (mediaQuery.size.height -
+                            appBarWidget.preferredSize.height -
+                            mediaQuery.padding.top) *
+                        0.6,
+                    child: Chart(_recentTransactions),
                   )
-                ],
-              ),
-            // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
+                : txListWidget,
 
-            // shows chart or list of transactions depending on toggle _showChart
-            if (isLandscape)
-              _showChart
-                  ? Container(
-                      padding: EdgeInsets.all(10),
-                      height: (MediaQuery.of(context).size.height -
-                              appBarWidget.preferredSize.height -
-                              MediaQuery.of(context).padding.top) *
-                          0.6,
-                      child: Chart(_recentTransactions),
-                    )
-                  : txListWidget,
+          if (!isLandscape)
+            Container(
+              padding: EdgeInsets.all(10),
+              height: (mediaQuery.size.height -
+                      appBarWidget.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.3,
+              child: Chart(_recentTransactions),
+            ),
 
-            if (!isLandscape)
-              Container(
-                padding: EdgeInsets.all(10),
-                height: (MediaQuery.of(context).size.height -
-                        appBarWidget.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.3,
-                child: Chart(_recentTransactions),
-              ),
-
-            if (!isLandscape) txListWidget
-          ],
-        ),
+          if (!isLandscape) txListWidget
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _startAddNewTransaction(context),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+
+    return 
+    // Platform.isIOS
+    //     ? CupertinoPageScaffold(
+    //         navigationBar: appBarWidget,
+    //         child: appBody,
+    //       )
+    //     : 
+        Scaffold(
+            appBar: appBarWidget,
+            body: appBody,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () => _startAddNewTransaction(context),
+                  ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+          );
   }
 }
