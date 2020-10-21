@@ -85,6 +85,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  bool _showChart = false;
+
   @override
   Widget build(BuildContext context) {
     final appBarWidget = AppBar(
@@ -101,27 +103,42 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          // children = SHOWS CHART AND LIST OF TRANSACTIONS
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-              Container(
-                padding: EdgeInsets.all(10),
-                height: (MediaQuery.of(context).size.height -
-                        appBarWidget.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.3,
-                child: Chart(_recentTransactions),
-              ),
-            // ),
-            // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
-
-            Container(
-              height: (MediaQuery.of(context).size.height -
-                        appBarWidget.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.7,
-              child: TransactionList(_userTransactions, _deleteTransaction),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Show Chart'),
+                Switch(
+                  value: _showChart,
+                  onChanged: (val) {
+                    setState(() {
+                      _showChart = val;
+                    });
+                  },
+                )
+              ],
             ),
+            // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
+            
+            // shows chart or list of transactions depending on toggle _showChart
+            _showChart
+                ? Container(
+                    padding: EdgeInsets.all(10),
+                    height: (MediaQuery.of(context).size.height -
+                            appBarWidget.preferredSize.height -
+                            MediaQuery.of(context).padding.top) *
+                        0.6,
+                    child: Chart(_recentTransactions),
+                  )
+                : Container(
+                    height: (MediaQuery.of(context).size.height -
+                            appBarWidget.preferredSize.height -
+                            MediaQuery.of(context).padding.top) *
+                        0.8,
+                    child:
+                        TransactionList(_userTransactions, _deleteTransaction),
+                  ),
           ],
         ),
       ),
