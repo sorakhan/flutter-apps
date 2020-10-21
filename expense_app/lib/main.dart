@@ -89,6 +89,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final appBarWidget = AppBar(
       title: Text('Transax'),
       actions: [
@@ -98,6 +100,13 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+    final txListWidget = Container(
+      height: (MediaQuery.of(context).size.height -
+              appBarWidget.preferredSize.height -
+              MediaQuery.of(context).padding.top) *
+          0.8,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
     return Scaffold(
       appBar: appBarWidget,
       body: SingleChildScrollView(
@@ -105,40 +114,47 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           // children = SHOWS CHART AND LIST OF TRANSACTIONS
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Show Chart'),
-                Switch(
-                  value: _showChart,
-                  onChanged: (val) {
-                    setState(() {
-                      _showChart = val;
-                    });
-                  },
-                )
-              ],
-            ),
-            // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
-            
-            // shows chart or list of transactions depending on toggle _showChart
-            _showChart
-                ? Container(
-                    padding: EdgeInsets.all(10),
-                    height: (MediaQuery.of(context).size.height -
-                            appBarWidget.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
-                        0.6,
-                    child: Chart(_recentTransactions),
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    },
                   )
-                : Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBarWidget.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
-                        0.8,
-                    child:
-                        TransactionList(_userTransactions, _deleteTransaction),
-                  ),
+                ],
+              ),
+            // UserTransactions() // no longer using this because we need to manipulate the transaction list through here because of the modalBottomSheet
+
+            // shows chart or list of transactions depending on toggle _showChart
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      padding: EdgeInsets.all(10),
+                      height: (MediaQuery.of(context).size.height -
+                              appBarWidget.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.6,
+                      child: Chart(_recentTransactions),
+                    )
+                  : txListWidget,
+
+            if (!isLandscape)
+              Container(
+                padding: EdgeInsets.all(10),
+                height: (MediaQuery.of(context).size.height -
+                        appBarWidget.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(_recentTransactions),
+              ),
+
+            if (!isLandscape) txListWidget
           ],
         ),
       ),
