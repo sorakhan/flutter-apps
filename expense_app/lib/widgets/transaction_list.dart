@@ -15,8 +15,10 @@ class TransactionList extends StatelessWidget {
             return Column(
               children: [
                 SizedBox(height: 20),
-                Text('No transactions made yet',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  'No transactions made yet',
+                  style: Theme.of(context).textTheme.headline6 //  TextStyle(fontWeight: FontWeight.bold)
+                ),
                 SizedBox(
                   height: 20,
                 ),

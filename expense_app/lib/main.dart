@@ -16,7 +16,12 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return 
+    // Platform.isIOS ? CupertinoApp(
+    //   title: 'Transaction App',
+    //   home: HomePage(),
+    // ) : 
+    MaterialApp(
       title: 'Transaction App',
       home: HomePage(),
       theme: ThemeData(
@@ -125,7 +130,7 @@ class _HomePageState extends State<HomePage> {
       child: TransactionList(_userTransactions, _deleteTransaction),
     );
 
-    final appBody = SingleChildScrollView(
+    final appBody = SafeArea(child: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         // children = SHOWS CHART AND LIST OF TRANSACTIONS
@@ -134,7 +139,7 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Show Chart'),
+                Text('Show Chart', style: Theme.of(context).textTheme.headline6),
                 Switch.adaptive(
                   activeColor: Theme.of(context).primaryColor,
                   value: _showChart,
@@ -174,15 +179,15 @@ class _HomePageState extends State<HomePage> {
           if (!isLandscape) txListWidget
         ],
       ),
-    );
+    ),);
 
     return 
-    // Platform.isIOS
-    //     ? CupertinoPageScaffold(
-    //         navigationBar: appBarWidget,
-    //         child: appBody,
-    //       )
-    //     : 
+    Platform.isIOS
+        ? CupertinoPageScaffold(
+            navigationBar: appBarWidget,
+            child: appBody,
+          )
+        : 
         Scaffold(
             appBar: appBarWidget,
             body: appBody,
